@@ -1,11 +1,11 @@
 # trcache-kiwoom-ocx
 
-Shared-memory bridge between 32-bit Kiwoom OCX (Trader) and 64-bit trcache engine for real-time tick data capture.
+Shared-memory bridge between 32-bit Kiwoom OCX and 64-bit trcache engine for real-time tick data capture.
 
 ## Architecture
 
 ```
-[32-bit Trader] --push--> [Shared Memory (SPSC Queue)] --pop--> [64-bit Engine] --feed--> [trcache] --flush--> [disk]
+[32-bit OCX] --push--> [Shared Memory (SPSC Queue)] --pop--> [64-bit Engine] --feed--> [trcache] --flush--> [disk]
 ```
 
 ## Build (Windows, MSVC 64-bit)
