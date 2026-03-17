@@ -202,30 +202,38 @@ static inline int kob_push(struct kob_handle *h, const void *entry)
 }
 
 /*
- * Pop one entry (consumer side).
+ * Peek at the front entry without consuming it (consumer side).
  *
- * out must point to at least entry_size bytes.
- * Returns 0 on success, -1 if the queue is empty.
+ * Returns a pointer to the entry in the queue, or NULL if empty.
+ * The pointer remains valid until kob_pop() is called.
  */
-static inline int kob_pop(struct kob_handle *h, void *out)
+static inline void *kob_front(struct kob_handle *h)
 {
 	struct kob_queue *q = h->queue;
-	uint32_t head, tail, mask, esz;
+	uint32_t tail, head, mask;
 
 	tail = q->tail;
 	KOB_COMPILER_BARRIER();
 	head = q->head;
 
 	if (tail == head)
-		return -1;
+		return NULL;
 
 	mask = q->capacity - 1;
-	esz  = q->entry_size;
-	memcpy(out, q->data + (size_t)(tail & mask) * esz, esz);
-	KOB_COMPILER_BARRIER();
-	q->tail = tail + 1;
+	return q->data + (size_t)(tail & mask) * q->entry_size;
+}
 
-	return 0;
+/*
+ * Consume the front entry (consumer side).
+ *
+ * Must be called after kob_front() returned non-NULL.
+ * Advances the tail so the producer can reuse the slot.
+ */
+static inline void kob_pop(struct kob_handle *h)
+{
+	struct kob_queue *q = h->queue;
+	KOB_COMPILER_BARRIER();
+	q->tail = q->tail + 1;
 }
 
 /* Returns non-zero if data loss occurred (queue was full). */

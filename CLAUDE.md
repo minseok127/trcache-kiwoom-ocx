@@ -19,6 +19,14 @@ cmake --build build --config Release
 
 Output: `build/engine/Release/kob_engine.exe`
 
+## Run
+
+```powershell
+kob_engine.exe <output_dir>
+```
+
+The producer (32-bit Kiwoom Trader) must be running first — it creates the shared memory via `kob_create()`. The engine opens it with `kob_open()`. Output goes to `<output_dir>/<YYYYMMDD>/<symbol>.bin`. Stats are printed to stderr every 10 seconds (push/pop rates, queue depth, disk bytes written).
+
 ## Architecture
 
 ```
